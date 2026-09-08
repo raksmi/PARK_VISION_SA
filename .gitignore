@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.log
+
+# Local dataset
+raw dataset/
+dataset/
+evaluation_results.txt
+
+# Local training outputs
+runs/
+
+# Temporary predictions
+predictions/
+
+# Keep credentials/private files out of GitHub
+kaggle.json
