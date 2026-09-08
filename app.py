@@ -286,6 +286,105 @@ st.markdown(
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
+
+    .hero-panel {
+        position: relative;
+        overflow: hidden;
+        padding: 28px 30px 26px;
+        margin: 4px 0 28px;
+        border-radius: 26px;
+        border: 1px solid rgba(139,92,246,0.22);
+        background:
+            radial-gradient(circle at 88% 20%, rgba(34,211,238,0.12), transparent 28%),
+            radial-gradient(circle at 55% 100%, rgba(139,92,246,0.14), transparent 34%),
+            linear-gradient(135deg, rgba(255,255,255,0.065), rgba(255,255,255,0.018)),
+            rgba(12,12,27,0.52);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.07),
+            0 24px 70px rgba(0,0,0,0.25);
+    }
+
+    .hero-panel::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -110px;
+        top: -150px;
+        border-radius: 50%;
+        background: rgba(139,92,246,0.18);
+        filter: blur(35px);
+    }
+
+    .hero-eyebrow {
+        color: #a78bfa;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2.2px;
+        margin-bottom: 7px;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4.4rem);
+        line-height: 0.98;
+        font-weight: 800;
+        letter-spacing: -3px;
+        margin: 0;
+        background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 46%, #67e8f9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        color: #9ca3af;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        margin-top: 12px;
+    }
+
+    .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 19px;
+    }
+
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: #dbeafe;
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.6px;
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .hero-pill .pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #8b5cf6;
+        box-shadow: 0 0 10px rgba(139,92,246,0.8);
+    }
+
+    .hero-pill:nth-child(2) .pill-dot {
+        background: #22d3ee;
+        box-shadow: 0 0 10px rgba(34,211,238,0.8);
+    }
+
+    .hero-pill:nth-child(3) .pill-dot {
+        background: #34d399;
+        box-shadow: 0 0 10px rgba(52,211,153,0.8);
+    }
+
     .footer {
         text-align: center;
         color: #64647a;
@@ -731,6 +830,8 @@ def reset_upload():
 
     st.session_state.upload_history = []
 
+    st.session_state.upload_sound_played = False
+
 
 def analyse_uploaded_image(
     image,
@@ -767,6 +868,8 @@ def analyse_uploaded_image(
     add_upload_history(
         insights
     )
+
+    st.session_state.upload_sound_played = False
 
 
 def render_upload_results():
@@ -893,40 +996,18 @@ def render_upload_results():
             insights["recommendation"]
         )
 
-    sound1, sound2 = (
-        st.columns(2)
-    )
-
-    with sound1:
-
-        upload_sound = st.toggle(
-            "🔊 Sound Alerts",
-            value=False,
-            key="upload_sound"
-        )
-
-    with sound2:
-
-        if st.button(
-            "🔊 Test Sound",
-            use_container_width=True,
-            key="upload_test_sound"
-        ):
-
-            sound_alert(
-                level,
-                True
-            )
-
     if (
-        upload_sound
+        sound_enabled
         and insights["total"] > 0
+        and not st.session_state.upload_sound_played
     ):
 
         sound_alert(
             level,
             True
         )
+
+        st.session_state.upload_sound_played = True
 
     st.divider()
 
@@ -1449,6 +1530,14 @@ if (
     st.session_state.upload_history = []
 
 
+if (
+    "upload_sound_played"
+    not in st.session_state
+):
+
+    st.session_state.upload_sound_played = False
+
+
 with st.sidebar:
 
     st.markdown(
@@ -1484,31 +1573,29 @@ with st.sidebar:
         ]
     )
 
-    if mode == "Live camera":
+    st.divider()
 
-        st.divider()
-
-        sound_enabled = st.toggle(
-            "🔊 Sound alerts",
-            value=True
-        )
+    sound_enabled = st.toggle(
+        "🔊 Sound alerts",
+        value=True,
+        key="global_sound_alerts"
+    )
 
 
 st.markdown(
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
-    '<span style="font-size:12px;font-weight:800;letter-spacing:1.8px;color:#a78bfa;'
-    'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.22);'
-    'padding:7px 11px;border-radius:999px;">AI PARKING INTELLIGENCE</span>'
-    '</div>',
+    """
+    <div class="hero-panel">
+        <div class="hero-eyebrow">WELCOME TO</div>
+        <div class="hero-title">ParkVision AI</div>
+        <div class="hero-subtitle">AI-POWERED PARKING SPACE DETECTION</div>
+        <div class="hero-pills">
+            <span class="hero-pill"><span class="pill-dot"></span>REAL-TIME</span>
+            <span class="hero-pill"><span class="pill-dot"></span>AI DETECTION</span>
+            <span class="hero-pill"><span class="pill-dot"></span>SMART PARKING</span>
+        </div>
+    </div>
+    """,
     unsafe_allow_html=True
-)
-
-st.title(
-    "ParkVision AI"
-)
-
-st.caption(
-    "SMART PARKING • COMPUTER VISION"
 )
 
 
