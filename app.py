@@ -32,168 +32,266 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --pv-border: rgba(255, 255, 255, 0.10);
+        --pv-purple: #8b5cf6;
+        --pv-cyan: #22d3ee;
+        --pv-muted: #a1a1b5;
+    }
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
     .stApp {
         background:
-            radial-gradient(
-                circle at 85% 0%,
-                rgba(37, 99, 235, 0.16),
-                transparent 32%
-            ),
-            radial-gradient(
-                circle at 5% 100%,
-                rgba(14, 165, 233, 0.08),
-                transparent 30%
-            ),
-            #060a12;
+            radial-gradient(circle at 10% 0%, rgba(139, 92, 246, 0.20), transparent 28%),
+            radial-gradient(circle at 90% 8%, rgba(34, 211, 238, 0.14), transparent 25%),
+            radial-gradient(circle at 70% 90%, rgba(236, 72, 153, 0.10), transparent 30%),
+            linear-gradient(135deg, #05050b 0%, #09091a 48%, #050510 100%);
+    }
+
+    .stApp::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: linear-gradient(to bottom, black, transparent 85%);
     }
 
     section[data-testid="stSidebar"] {
-        background:
-            linear-gradient(
-                180deg,
-                #0a101d 0%,
-                #060a12 100%
-            );
-        border-right:
-            1px solid
-            rgba(148, 163, 184, 0.10);
+        background: linear-gradient(180deg, rgba(12,12,28,0.88), rgba(6,6,15,0.94));
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-right: 1px solid rgba(139,92,246,0.16);
+        box-shadow: 12px 0 45px rgba(0,0,0,0.22);
+    }
+
+    section[data-testid="stSidebar"] > div {
+        background: transparent;
     }
 
     .block-container {
-        max-width: 1450px;
-        padding-top: 2.3rem;
+        max-width: 1480px;
+        padding-top: 2.5rem;
         padding-bottom: 4rem;
     }
 
     h1 {
         font-weight: 800 !important;
-        letter-spacing: -2px !important;
+        letter-spacing: -2.5px !important;
+        background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 42%, #67e8f9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 22px rgba(139,92,246,0.18));
     }
 
     h2 {
         font-weight: 750 !important;
-        letter-spacing: -1px !important;
+        letter-spacing: -1.2px !important;
     }
 
     h3 {
         font-weight: 700 !important;
     }
 
+    .stCaption {
+        color: #9ca3af !important;
+        letter-spacing: 2px;
+        font-weight: 700;
+    }
+
     div[data-testid="stMetric"] {
+        position: relative;
+        overflow: hidden;
         background:
-            linear-gradient(
-                145deg,
-                rgba(17, 25, 42, 0.98),
-                rgba(9, 15, 27, 0.98)
-            );
-        border:
-            1px solid
-            rgba(148, 163, 184, 0.13);
-        border-radius: 18px;
-        padding: 20px;
-        min-height: 120px;
+            linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025)),
+            rgba(15,15,30,0.58);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--pv-border);
+        border-radius: 22px;
+        padding: 20px 20px 18px;
+        min-height: 122px;
         box-shadow:
-            0 12px 35px
-            rgba(0, 0, 0, 0.20);
-        transition:
-            all 0.2s ease;
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 18px 55px rgba(0,0,0,0.24);
+        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    div[data-testid="stMetric"]::after {
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        right: -35px;
+        top: -45px;
+        border-radius: 50%;
+        background: rgba(139,92,246,0.14);
+        filter: blur(18px);
     }
 
     div[data-testid="stMetric"]:hover {
-        transform:
-            translateY(-3px);
-        border-color:
-            rgba(56, 189, 248, 0.30);
+        transform: translateY(-4px);
+        border-color: rgba(139,92,246,0.38);
         box-shadow:
-            0 18px 45px
-            rgba(0, 0, 0, 0.28);
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            0 22px 65px rgba(76,29,149,0.22);
     }
 
     div[data-testid="stMetricLabel"] {
-        color:
-            #94a3b8 !important;
-        font-weight:
-            600;
+        color: var(--pv-muted) !important;
+        font-weight: 600;
     }
 
     div[data-testid="stMetricValue"] {
-        font-size:
-            2rem;
-        font-weight:
-            800;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    div[data-testid="stExpander"],
+    div[data-testid="stFileUploader"],
+    div[data-testid="stDataFrame"],
+    div[data-testid="stAlert"] {
+        border: 1px solid var(--pv-border);
+        border-radius: 20px;
+        background: rgba(18,18,34,0.48);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 14px 45px rgba(0,0,0,0.18);
+    }
+
+    div[data-testid="stFileUploader"] {
+        padding: 6px;
+        border-style: dashed;
+        border-color: rgba(139,92,246,0.35);
+    }
+
+    div[data-testid="stFileUploader"]:hover {
+        border-color: rgba(34,211,238,0.55);
+        box-shadow: 0 0 35px rgba(34,211,238,0.08);
     }
 
     .image-container {
-        border:
-            1px solid
-            rgba(148, 163, 184, 0.15);
-        border-radius:
-            20px;
-        padding:
-            8px;
+        border: 1px solid rgba(255,255,255,0.11);
+        border-radius: 24px;
+        padding: 8px;
         background:
-            #0b1220;
+            linear-gradient(135deg, rgba(139,92,246,0.08), rgba(34,211,238,0.04)),
+            rgba(10,10,22,0.62);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
         box-shadow:
-            0 20px 60px
-            rgba(0, 0, 0, 0.25);
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 25px 80px rgba(0,0,0,0.30);
     }
 
     .live-status {
-        display:
-            inline-flex;
-        align-items:
-            center;
-        gap:
-            9px;
-        padding:
-            9px 16px;
-        border-radius:
-            999px;
-        background:
-            rgba(16, 185, 129, 0.12);
-        border:
-            1px solid
-            rgba(52, 211, 153, 0.25);
-        color:
-            #34d399;
-        font-weight:
-            750;
-        font-size:
-            13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 16px;
+        border-radius: 999px;
+        background: rgba(16,185,129,0.10);
+        border: 1px solid rgba(52,211,153,0.26);
+        color: #6ee7b7;
+        font-weight: 750;
+        font-size: 13px;
+        box-shadow: 0 0 28px rgba(16,185,129,0.08);
     }
 
     .dot {
-        width:
-            8px;
-        height:
-            8px;
-        border-radius:
-            50%;
-        background:
-            #34d399;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 12px rgba(52,211,153,0.85);
+        animation: pvPulse 1.8s infinite;
+    }
+
+    @keyframes pvPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.45); opacity: 0.55; }
+    }
+
+    .stButton > button,
+    .stDownloadButton > button {
+        border-radius: 14px;
+        min-height: 44px;
+        font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: linear-gradient(135deg, rgba(139,92,246,0.16), rgba(34,211,238,0.07));
+        color: #f8fafc;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        transition: all 0.2s ease;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translateY(-2px);
+        border-color: rgba(139,92,246,0.45);
         box-shadow:
-            0 0 12px
-            rgba(52, 211, 153, 0.8);
+            0 10px 28px rgba(76,29,149,0.20),
+            inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    button[kind="primary"] {
+        background: linear-gradient(135deg, #7c3aed, #0891b2) !important;
+        border: 1px solid rgba(255,255,255,0.18) !important;
+        box-shadow: 0 12px 35px rgba(124,58,237,0.28) !important;
+    }
+
+    button[kind="primary"]:hover {
+        filter: brightness(1.08);
+        box-shadow: 0 16px 42px rgba(124,58,237,0.38) !important;
+    }
+
+    div[data-baseweb="select"] > div {
+        border-radius: 14px;
+        background: rgba(255,255,255,0.045);
+        border-color: rgba(255,255,255,0.09);
+    }
+
+    section[data-testid="stSidebar"] label[data-baseweb="radio"] {
+        border-radius: 12px;
+        padding: 7px 9px;
+    }
+
+    section[data-testid="stSidebar"] label[data-baseweb="radio"]:hover {
+        background: rgba(139,92,246,0.08);
+    }
+
+    hr {
+        border: none !important;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(139,92,246,0.25), rgba(34,211,238,0.20), transparent);
+        margin: 1.4rem 0;
+    }
+
+    .js-plotly-plot {
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(15,15,30,0.34);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     .footer {
-        text-align:
-            center;
-        color:
-            #475569;
-        font-size:
-            11px;
-        padding-top:
-            35px;
-    }
-
-    .stButton > button {
-        border-radius:
-            12px;
-        min-height:
-            42px;
-        font-weight:
-            700;
+        text-align: center;
+        color: #64647a;
+        font-size: 11px;
+        padding-top: 35px;
+        letter-spacing: 1px;
     }
     </style>
     """,
@@ -1395,6 +1493,15 @@ with st.sidebar:
             value=True
         )
 
+
+st.markdown(
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'
+    '<span style="font-size:12px;font-weight:800;letter-spacing:1.8px;color:#a78bfa;'
+    'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.22);'
+    'padding:7px 11px;border-radius:999px;">AI PARKING INTELLIGENCE</span>'
+    '</div>',
+    unsafe_allow_html=True
+)
 
 st.title(
     "ParkVision AI"
