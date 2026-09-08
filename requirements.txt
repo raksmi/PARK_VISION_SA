@@ -1,11 +1,9 @@
 ultralytics
 streamlit
-pillow
-torch
-torchvision
 opencv-python
+pandas
 numpy
-pyyaml
+Pillow
 plotly
 streamlit-webrtc
 av
