@@ -18,13 +18,7 @@ from parking_logic import parking_insights
 
 BASE_DIR = Path(__file__).resolve().parent
 
-MODEL_PATH = (
-    BASE_DIR
-    / "runs"
-    / "parkvision_yolo26s"
-    / "weights"
-    / "best.pt"
-)
+MODEL_PATH = Path("best.pt")
 
 
 st.set_page_config(
