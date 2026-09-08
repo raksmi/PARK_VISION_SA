@@ -1,4 +1,4 @@
-ultralytics
+ultralytics-opencv-headless==8.4.143
 streamlit
 pandas
 numpy
@@ -6,6 +6,4 @@ Pillow
 plotly
 streamlit-webrtc
 av
-opencv-python-headless==4.10.0.84
-opencv-contrib-python-headless==4.10.0.84
 streamlit-autorefresh
