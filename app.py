@@ -3143,37 +3143,37 @@ pages = {
         st.Page(
             render_home_page,
             title="Home",
-            icon="⌂"
+            icon="🏠"
         ),
         st.Page(
             render_upload_page,
             title="Upload Image",
-            icon="▧"
+            icon="📁"
         ),
         st.Page(
             render_live_page,
             title="Live Monitor",
-            icon="◉"
+            icon="🎥"
         ),
         st.Page(
             render_analytics_page,
             title="Analytics",
-            icon="▥"
+            icon="📊"
         ),
         st.Page(
             render_history_page,
             title="Detection History",
-            icon="◷"
+            icon="📂"
         ),
         st.Page(
             render_settings_page,
             title="Settings",
-            icon="⚙"
+            icon="⚙️"
         ),
         st.Page(
             render_about_page,
             title="About",
-            icon="ⓘ"
+            icon="ℹ️"
         )
     ]
 }
