@@ -6,3 +6,6 @@ torchvision
 opencv-python
 numpy
 pyyaml
+plotly
+streamlit-webrtc
+av
