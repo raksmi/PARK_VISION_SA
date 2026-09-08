@@ -9,3 +9,14 @@ av
 opencv-python-headless==4.10.0.84
 opencv-contrib-python-headless==4.10.0.84
 streamlit-autorefresh
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit
+tensorflow-cpu
+torch
+torchvision
+https://github.com/ultralytics/ultralytics/archive/refs/tags/v8.4.19.zip
+
+
+imageio[ffmpeg]
+opencv-python-headless==4.10.0.84
+opencv-contrib-python-headless==4.10.0.84
