@@ -517,6 +517,104 @@ st.markdown(
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 18px 50px rgba(0,0,0,0.20);
     }
 
+
+    .page-heading {
+        margin: 8px 0 24px;
+    }
+
+    .page-kicker {
+        color: #a78bfa;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+    }
+
+    .page-title {
+        color: #f8fafc;
+        font-size: 34px;
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+    }
+
+    .page-subtitle {
+        color: #8f91a5;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    .empty-card {
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .history-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 16px 18px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 17px;
+        background: rgba(15,15,30,0.48);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+    .history-name {
+        color: #f8fafc;
+        font-size: 13px;
+        font-weight: 750;
+        word-break: break-word;
+    }
+
+    .history-meta {
+        color: #777a8d;
+        font-size: 10px;
+        margin-top: 4px;
+    }
+
+    .history-stats {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #aeb1c1;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .history-stats strong {
+        color: #c4b5fd;
+        font-size: 15px;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+        padding-top: 4px;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+        border-radius: 13px;
+        margin: 4px 0;
+        padding: 9px 11px;
+        border: 1px solid transparent;
+        transition: all 0.18s ease;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+        background: rgba(139,92,246,0.09);
+        border-color: rgba(139,92,246,0.15);
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"][aria-current="page"] {
+        background: linear-gradient(135deg, rgba(124,58,237,0.30), rgba(8,145,178,0.15));
+        border-color: rgba(139,92,246,0.34);
+        box-shadow: 0 8px 24px rgba(76,29,149,0.16);
+    }
+
     .footer {
         text-align: center;
         color: #64647a;
@@ -917,7 +1015,8 @@ def annotated_bytes(
 
 
 def add_upload_history(
-    insights
+    insights,
+    filename
 ):
 
     if (
@@ -933,6 +1032,8 @@ def add_upload_history(
                 datetime.now().strftime(
                     "%H:%M:%S"
                 ),
+            "Image":
+                filename,
             "Occupancy":
                 round(
                     insights["occupancy"],
@@ -998,7 +1099,8 @@ def analyse_uploaded_image(
     )
 
     add_upload_history(
-        insights
+        insights,
+        filename
     )
 
     st.session_state.upload_sound_played = False
@@ -1670,6 +1772,56 @@ if (
     st.session_state.upload_sound_played = False
 
 
+
+if model is None:
+
+    st.error(
+        "Trained model could not be found."
+    )
+
+    st.stop()
+
+
+if (
+    "upload_result"
+    not in st.session_state
+):
+
+    st.session_state.upload_result = None
+
+
+if (
+    "upload_detections"
+    not in st.session_state
+):
+
+    st.session_state.upload_detections = None
+
+
+if (
+    "upload_filename"
+    not in st.session_state
+):
+
+    st.session_state.upload_filename = None
+
+
+if (
+    "upload_history"
+    not in st.session_state
+):
+
+    st.session_state.upload_history = []
+
+
+if (
+    "upload_sound_played"
+    not in st.session_state
+):
+
+    st.session_state.upload_sound_played = False
+
+
 with st.sidebar:
 
     st.markdown(
@@ -1705,70 +1857,542 @@ with st.sidebar:
 
     st.divider()
 
-    mode = st.radio(
-        "NAVIGATION",
-        [
-            "⌂  Home",
-            "▧  Upload Image",
-            "◉  Live Camera",
-            "▥  Analytics",
-            "◷  Detection History",
-            "⚙  Settings",
-            "ⓘ  About"
-        ],
-        label_visibility="visible"
-    )
-
-    if mode == "⌂  Home":
-        mode = "Upload image"
-    elif mode == "▧  Upload Image":
-        mode = "Upload image"
-    elif mode == "◉  Live Camera":
-        mode = "Live camera"
-    elif mode in ["▥  Analytics", "◷  Detection History", "⚙  Settings", "ⓘ  About"]:
-        mode = "Upload image"
-
-    st.divider()
-
     sound_enabled = st.toggle(
         "🔊 Sound alerts",
         value=True,
         key="global_sound_alerts"
     )
 
+    st.divider()
 
-st.markdown(
-    """
-    <div class="hero-panel">
-        <div class="hero-eyebrow">WELCOME TO</div>
-        <div class="hero-title">ParkVision</div>
-        <div class="hero-subtitle">AI-POWERED PARKING SPACE DETECTION</div>
-        <div class="hero-pills">
-            <span class="hero-pill"><span class="pill-dot"></span>REAL-TIME</span>
-            <span class="hero-pill"><span class="pill-dot"></span>ACCURATE</span>
-            <span class="hero-pill"><span class="pill-dot"></span>SMARTER CITIES</span>
+    st.caption("PARKVISION AI")
+    st.caption("SMARTER PARKING • GREENER CITIES")
+
+
+
+def render_home_page():
+    st.markdown(
+        """
+        <div class="hero-panel home-hero">
+            <div class="hero-eyebrow">WELCOME TO PARKVISION</div>
+            <div class="hero-title">Smarter Parking.</div>
+            <div class="hero-subtitle">AI-POWERED PARKING SPACE DETECTION</div>
+            <div class="hero-pills">
+                <span class="hero-pill"><span class="pill-dot"></span>REAL-TIME</span>
+                <span class="hero-pill"><span class="pill-dot"></span>ACCURATE</span>
+                <span class="hero-pill"><span class="pill-dot"></span>SMARTER CITIES</span>
+            </div>
         </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True
+    )
+
+    history = st.session_state.get("upload_history", [])
+    live = live_stats.read()
+
+    h1, h2, h3, h4 = st.columns(4)
+
+    with h1:
+        st.metric("Total Spaces", live["total"])
+
+    with h2:
+        st.metric("Available", live["empty"])
+
+    with h3:
+        st.metric("Occupied", live["occupied"])
+
+    with h4:
+        st.metric("Occupancy", f'{live["occupancy"]:.1f}%')
+
+    st.divider()
+
+    left, right = st.columns([1.35, 1])
+
+    with left:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">GET STARTED</div>
+                <div class="card-title">Choose how you want to monitor the parking area</div>
+                <div class="card-subtitle">Analyse a saved parking image or switch to the live camera for continuous detection.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        x, y = st.columns(2)
+
+        with x:
+            if st.button(
+                "▧  Analyse an Image",
+                type="primary",
+                use_container_width=True
+            ):
+                st.session_state["nav_target"] = "▧  Upload Image"
+                st.rerun()
+
+        with y:
+            if st.button(
+                "◉  Open Live Monitor",
+                use_container_width=True
+            ):
+                st.session_state["nav_target"] = "◉  Live Monitor"
+                st.rerun()
+
+    with right:
+        st.markdown(
+            f"""
+            <div class="live-card">
+                <div class="card-kicker">SYSTEM STATUS</div>
+                <div class="card-title">{"LIVE DETECTION ACTIVE" if live["active"] else "READY TO DETECT"}</div>
+                <div class="card-subtitle">{"Last update: " + str(live["updated"]) if live["active"] else "Start a camera session to begin real-time analysis."}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.divider()
+
+    if history:
+        history_df = pd.DataFrame(history)
+        latest = history_df.iloc[-1]
+
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">LATEST ANALYSIS</div>
+                <div class="card-title">Most recent parking image</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        q1, q2, q3, q4 = st.columns(4)
+
+        with q1:
+            st.write("**Image**")
+            st.write(str(latest.get("Image", "Unknown")))
+
+        with q2:
+            st.metric("Available", int(latest["Available"]))
+
+        with q3:
+            st.metric("Occupied", int(latest["Occupied"]))
+
+        with q4:
+            st.metric("Occupancy", f'{float(latest["Occupancy"]):.1f}%')
+    else:
+        st.info("No image analyses yet. Your first result will appear on this dashboard.")
 
 
-summary_live = live_stats.read()
 
-st.markdown(
-    f"""
-    <div class="dashboard-card">
-        <div class="card-kicker">LIVE PARKING OVERVIEW</div>
-        <div class="card-title">Your parking intelligence at a glance</div>
-        <div class="card-subtitle">AI detection status updates automatically while the system is running.</div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+def render_analytics_page():
+    st.markdown(
+        """
+        <div class="page-heading">
+            <div class="page-kicker">ANALYTICS</div>
+            <div class="page-title">Parking Analytics</div>
+            <div class="page-subtitle">Review how occupancy changed across your analysed parking images.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-if mode == "Upload image":
+    history = st.session_state.get(
+        "upload_history",
+        []
+    )
 
+    if not history:
+        st.markdown(
+            """
+            <div class="dashboard-card empty-card">
+                <div class="card-title">No image history yet</div>
+                <div class="card-subtitle">Analyse a parking image first. Your results will appear here automatically.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        return
+
+    history_df = pd.DataFrame(history)
+
+    total_images = len(history_df)
+    peak = float(history_df["Occupancy"].max())
+    average = float(history_df["Occupancy"].mean())
+    latest = float(history_df.iloc[-1]["Occupancy"])
+
+    a, b, c, d = st.columns(4)
+
+    with a:
+        st.metric("Images Analysed", total_images)
+
+    with b:
+        st.metric("Peak Occupancy", f"{peak:.1f}%")
+
+    with c:
+        st.metric("Average Occupancy", f"{average:.1f}%")
+
+    with d:
+        st.metric("Latest Occupancy", f"{latest:.1f}%")
+
+    st.divider()
+
+    left, right = st.columns([1.7, 1])
+
+    with left:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">OCCUPANCY TREND</div>
+                <div class="card-title">Historical parking utilisation</div>
+                <div class="card-subtitle">Occupancy recorded after every image analysis.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+                x=history_df["Time"],
+                y=history_df["Occupancy"],
+                mode="lines+markers",
+                fill="tozeroy",
+                line={"width": 3},
+                marker={"size": 7},
+                name="Occupancy"
+            )
+        )
+
+        fig.update_layout(
+            height=410,
+            margin={"l": 10, "r": 10, "t": 15, "b": 10},
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font={"color": "#cbd5e1"},
+            xaxis={"showgrid": False},
+            yaxis={
+                "title": "Occupancy (%)",
+                "gridcolor": "rgba(148,163,184,0.10)"
+            },
+            showlegend=False
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={"displayModeBar": True, "displaylogo": False}
+        )
+
+    with right:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">LATEST IMAGE</div>
+                <div class="card-title">Most recent analysis</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        latest_row = history_df.iloc[-1]
+
+        st.metric(
+            "Image",
+            str(latest_row.get("Image", "Unknown"))
+        )
+
+        r1, r2 = st.columns(2)
+
+        with r1:
+            st.metric("Available", int(latest_row["Available"]))
+
+        with r2:
+            st.metric("Occupied", int(latest_row["Occupied"]))
+
+        st.write(f"Analysed at **{latest_row['Time']}**")
+
+    st.divider()
+
+    st.markdown(
+        """
+        <div class="dashboard-card">
+            <div class="card-kicker">ANALYSIS HISTORY</div>
+            <div class="card-title">Previous parking results</div>
+            <div class="card-subtitle">Every analysed image, its occupancy, and detected space counts.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    display_df = history_df.copy()
+
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.download_button(
+        "⬇️ Download Analysis History",
+        data=display_df.to_csv(index=False).encode("utf-8"),
+        file_name="parkvision_analysis_history.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+    if len(history_df) >= 2:
+        compare = history_df[["Time", "Occupancy", "Available", "Occupied", "Total"]].copy()
+
+        st.divider()
+
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">SPACE DISTRIBUTION</div>
+                <div class="card-title">Available vs occupied over time</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        dist_fig = go.Figure()
+
+        dist_fig.add_trace(
+            go.Scatter(
+                x=compare["Time"],
+                y=compare["Available"],
+                mode="lines+markers",
+                name="Available",
+                line={"width": 3}
+            )
+        )
+
+        dist_fig.add_trace(
+            go.Scatter(
+                x=compare["Time"],
+                y=compare["Occupied"],
+                mode="lines+markers",
+                name="Occupied",
+                line={"width": 3}
+            )
+        )
+
+        dist_fig.update_layout(
+            height=360,
+            margin={"l": 10, "r": 10, "t": 15, "b": 10},
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font={"color": "#cbd5e1"},
+            xaxis={"showgrid": False},
+            yaxis={"gridcolor": "rgba(148,163,184,0.10)"}
+        )
+
+        st.plotly_chart(
+            dist_fig,
+            use_container_width=True,
+            config={"displayModeBar": True, "displaylogo": False}
+        )
+
+
+
+def render_history_page():
+    st.markdown(
+        """
+        <div class="page-heading">
+            <div class="page-kicker">DETECTION HISTORY</div>
+            <div class="page-title">Previous Analyses</div>
+            <div class="page-subtitle">A clean record of every parking image analysed in this session.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    history = st.session_state.get(
+        "upload_history",
+        []
+    )
+
+    if not history:
+        st.info("No detections yet. Go to Upload Image and analyse a parking image.")
+        return
+
+    history_df = pd.DataFrame(history)
+
+    for i, row in history_df.iloc[::-1].iterrows():
+        st.markdown(
+            f"""
+            <div class="history-row">
+                <div>
+                    <div class="history-name">{row.get("Image", "Parking image")}</div>
+                    <div class="history-meta">{row["Time"]} • {int(row["Total"])} total spaces</div>
+                </div>
+                <div class="history-stats">
+                    <span>{int(row["Available"])} available</span>
+                    <span>{int(row["Occupied"])} occupied</span>
+                    <strong>{float(row["Occupancy"]):.1f}%</strong>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.download_button(
+        "⬇️ Export Full History",
+        data=history_df.to_csv(index=False).encode("utf-8"),
+        file_name="parkvision_detection_history.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+    if st.button(
+        "🗑 Clear Detection History",
+        use_container_width=True
+    ):
+        st.session_state.upload_history = []
+        st.rerun()
+
+
+
+def render_settings_page():
+    st.markdown(
+        """
+        <div class="page-heading">
+            <div class="page-kicker">SETTINGS</div>
+            <div class="page-title">System Controls</div>
+            <div class="page-subtitle">Tune ParkVision without changing the underlying model.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    s1, s2 = st.columns(2)
+
+    with s1:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">DETECTION</div>
+                <div class="card-title">Confidence threshold</div>
+                <div class="card-subtitle">Higher values show only more confident detections.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.write(f"Current threshold: **{confidence:.2f}**")
+
+        st.info("Use the Confidence slider in the sidebar to change this setting.")
+
+    with s2:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">AUDIO</div>
+                <div class="card-title">Sound alerts</div>
+                <div class="card-subtitle">The sidebar switch controls image and live-camera alerts.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        if sound_enabled:
+            st.success("Sound alerts are ON.")
+        else:
+            st.warning("Sound alerts are OFF.")
+
+    st.divider()
+
+    st.markdown(
+        """
+        <div class="dashboard-card">
+            <div class="card-kicker">SESSION DATA</div>
+            <div class="card-title">Reset local analysis data</div>
+            <div class="card-subtitle">This clears image history and current live statistics for this session.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "↻ Reset All Session Data",
+        type="primary",
+        use_container_width=True
+    ):
+        reset_upload()
+        live_stats.reset()
+        st.rerun()
+
+
+
+def render_about_page():
+    st.markdown(
+        """
+        <div class="page-heading">
+            <div class="page-kicker">ABOUT PARKVISION</div>
+            <div class="page-title">Smarter Parking.</div>
+            <div class="page-subtitle">AI-powered parking-space detection designed for faster decisions and better utilisation.</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">01</div>
+                <div class="card-title">Detect</div>
+                <div class="card-subtitle">YOLO computer vision identifies occupied and available parking spaces.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with c2:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">02</div>
+                <div class="card-title">Understand</div>
+                <div class="card-subtitle">Occupancy, availability and congestion are converted into useful insights.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with c3:
+        st.markdown(
+            """
+            <div class="dashboard-card">
+                <div class="card-kicker">03</div>
+                <div class="card-title">Act</div>
+                <div class="card-subtitle">Live monitoring and historical analytics help operators respond quickly.</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.divider()
+
+    st.markdown(
+        """
+        <div class="dashboard-card">
+            <div class="card-kicker">PROJECT STACK</div>
+            <div class="card-title">ParkVision AI</div>
+            <div class="card-subtitle">Streamlit • YOLO • Python • Plotly • WebRTC</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
+def render_upload_page():
     st.header(
         "Analyse Parking"
     )
@@ -1885,8 +2509,7 @@ if mode == "Upload image":
     render_upload_results()
 
 
-else:
-
+def render_live_page():
     try:
 
         from streamlit_autorefresh import (
@@ -2515,6 +3138,54 @@ else:
         )
 
 
+pages = {
+    "": [
+        st.Page(
+            render_home_page,
+            title="Home",
+            icon="⌂"
+        ),
+        st.Page(
+            render_upload_page,
+            title="Upload Image",
+            icon="▧"
+        ),
+        st.Page(
+            render_live_page,
+            title="Live Monitor",
+            icon="◉"
+        ),
+        st.Page(
+            render_analytics_page,
+            title="Analytics",
+            icon="▥"
+        ),
+        st.Page(
+            render_history_page,
+            title="Detection History",
+            icon="◷"
+        ),
+        st.Page(
+            render_settings_page,
+            title="Settings",
+            icon="⚙"
+        ),
+        st.Page(
+            render_about_page,
+            title="About",
+            icon="ⓘ"
+        )
+    ]
+}
+
+
+navigation = st.navigation(
+    pages,
+    position="sidebar",
+    expanded=True
+)
+
+
 st.markdown(
     """
     <div class="dashboard-card" style="text-align:center;margin-top:28px;">
@@ -2529,7 +3200,4 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-    '<div class="footer">ParkVision AI</div>',
-    unsafe_allow_html=True
-)
+navigation.run()
