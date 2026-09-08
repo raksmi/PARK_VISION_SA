@@ -7,3 +7,5 @@ Pillow
 plotly
 streamlit-webrtc
 av
+opencv-python-headless==4.10.0.84
+opencv-contrib-python-headless==4.10.0.84
