@@ -385,6 +385,138 @@ st.markdown(
         box-shadow: 0 0 10px rgba(52,211,153,0.8);
     }
 
+    .dashboard-card {
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 22px;
+        padding: 20px;
+        background:
+            radial-gradient(circle at 100% 0%, rgba(139,92,246,0.10), transparent 32%),
+            rgba(15,15,30,0.52);
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 18px 55px rgba(0,0,0,0.22);
+        margin-bottom: 18px;
+    }
+
+    .card-kicker {
+        color: #a1a1b5;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    .card-title {
+        color: #f8fafc;
+        font-size: 19px;
+        font-weight: 800;
+        margin-top: 4px;
+    }
+
+    .card-subtitle {
+        color: #8f91a5;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+    .insight-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        color: #d7d9e4;
+        font-size: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .insight-row:last-child {
+        border-bottom: none;
+    }
+
+    .insight-check {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 21px;
+        height: 21px;
+        border-radius: 50%;
+        color: #34d399;
+        border: 1px solid rgba(52,211,153,0.28);
+        background: rgba(52,211,153,0.08);
+        font-weight: 800;
+    }
+
+    .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        border: 1px solid rgba(245,158,11,0.30);
+        color: #fbbf24;
+        background: rgba(245,158,11,0.08);
+    }
+
+    .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 18px;
+    }
+
+    .sidebar-logo {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 22px;
+        font-weight: 900;
+        color: white;
+        background: linear-gradient(135deg, #7c3aed, #0891b2);
+        box-shadow: 0 0 28px rgba(124,58,237,0.35);
+        border: 1px solid rgba(255,255,255,0.20);
+    }
+
+    .sidebar-name {
+        font-size: 17px;
+        font-weight: 800;
+        color: #f8fafc;
+        line-height: 1.05;
+    }
+
+    .sidebar-tagline {
+        color: #85879a;
+        font-size: 8px;
+        letter-spacing: 1.1px;
+        margin-top: 4px;
+    }
+
+    .nav-note {
+        color: #717387;
+        font-size: 10px;
+        line-height: 1.5;
+        margin: 10px 2px 0;
+    }
+
+    .live-card {
+        border: 1px solid rgba(34,211,238,0.16);
+        background:
+            radial-gradient(circle at 100% 0%, rgba(34,211,238,0.11), transparent 30%),
+            rgba(10,16,30,0.52);
+        border-radius: 22px;
+        padding: 18px;
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 18px 50px rgba(0,0,0,0.20);
+    }
+
     .footer {
         text-align: center;
         color: #64647a;
@@ -1541,18 +1673,26 @@ if (
 with st.sidebar:
 
     st.markdown(
-        "## 🅿️ ParkVision"
+        """
+        <div class="sidebar-brand">
+            <div class="sidebar-logo">P</div>
+            <div>
+                <div class="sidebar-name">ParkVision</div>
+                <div class="sidebar-tagline">AI PARKING INTELLIGENCE</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        '<div class="live-status"><span class="dot"></span>AI SYSTEM READY</div>',
+        unsafe_allow_html=True
     )
 
     st.divider()
 
-    st.success(
-        "● AI READY"
-    )
-
-    st.write(
-        "Confidence"
-    )
+    st.write("Confidence")
 
     confidence = st.slider(
         "Confidence threshold",
@@ -1566,12 +1706,27 @@ with st.sidebar:
     st.divider()
 
     mode = st.radio(
-        "Mode",
+        "NAVIGATION",
         [
-            "Upload image",
-            "Live camera"
-        ]
+            "⌂  Home",
+            "▧  Upload Image",
+            "◉  Live Camera",
+            "▥  Analytics",
+            "◷  Detection History",
+            "⚙  Settings",
+            "ⓘ  About"
+        ],
+        label_visibility="visible"
     )
+
+    if mode == "⌂  Home":
+        mode = "Upload image"
+    elif mode == "▧  Upload Image":
+        mode = "Upload image"
+    elif mode == "◉  Live Camera":
+        mode = "Live camera"
+    elif mode in ["▥  Analytics", "◷  Detection History", "⚙  Settings", "ⓘ  About"]:
+        mode = "Upload image"
 
     st.divider()
 
@@ -1586,18 +1741,31 @@ st.markdown(
     """
     <div class="hero-panel">
         <div class="hero-eyebrow">WELCOME TO</div>
-        <div class="hero-title">ParkVision AI</div>
+        <div class="hero-title">ParkVision</div>
         <div class="hero-subtitle">AI-POWERED PARKING SPACE DETECTION</div>
         <div class="hero-pills">
             <span class="hero-pill"><span class="pill-dot"></span>REAL-TIME</span>
-            <span class="hero-pill"><span class="pill-dot"></span>AI DETECTION</span>
-            <span class="hero-pill"><span class="pill-dot"></span>SMART PARKING</span>
+            <span class="hero-pill"><span class="pill-dot"></span>ACCURATE</span>
+            <span class="hero-pill"><span class="pill-dot"></span>SMARTER CITIES</span>
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
+
+summary_live = live_stats.read()
+
+st.markdown(
+    f"""
+    <div class="dashboard-card">
+        <div class="card-kicker">LIVE PARKING OVERVIEW</div>
+        <div class="card-title">Your parking intelligence at a glance</div>
+        <div class="card-subtitle">AI detection status updates automatically while the system is running.</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 if mode == "Upload image":
 
@@ -2346,6 +2514,20 @@ else:
             "python -m pip install streamlit-webrtc av streamlit-autorefresh plotly"
         )
 
+
+st.markdown(
+    """
+    <div class="dashboard-card" style="text-align:center;margin-top:28px;">
+        <div style="color:#67e8f9;font-size:12px;font-weight:800;letter-spacing:1px;">
+            ✦ SMARTER PARKING. GREENER CITIES. HAPPIER PEOPLE.
+        </div>
+        <div style="color:#707286;font-size:10px;margin-top:6px;">
+            Powered by AI • ParkVision
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown(
     '<div class="footer">ParkVision AI</div>',
