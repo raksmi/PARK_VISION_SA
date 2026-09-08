@@ -1,6 +1,5 @@
 ultralytics
 streamlit
-opencv-python
 pandas
 numpy
 Pillow
